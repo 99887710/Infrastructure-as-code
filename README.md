@@ -9,3 +9,5 @@ Advantages:
 1) Automation provisioning
 2) Version control
 3) Integration with CI/CD 
+4) Fast reflication
+
