@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String
+
+Resources:
+  Redis:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !ImportValue task-definition-redis
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          SecurityGroups: 
+            - !ImportValue redis-sg-id
+          Subnets: 
+            - !ImportValue voodoo-vpc-privateSubnet1Id
+      ServiceRegistries:
+        - RegistryArn: !ImportValue redis-service-discovery-service-arn
+
+Outputs:
+  RedisEcsServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref Redis
+    Export: 
+      Name: redis-ecs-service-arn       

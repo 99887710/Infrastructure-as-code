@@ -1,0 +1,10 @@
+Image={{Your AWS Account Number}}.dkr.ecr.eu-west-2.amazonaws.com/voodoo-terminal-simulators-release:latest
+ServiceName=simulator
+NetworkMode=awsvpc
+RequiresCompatibilities=FARGATE
+Cpu=1024
+Memory=2GB
+ContainerPort=9090
+PatUrl={{Your Network Load Balancer URL}}
+PosUrl={{Your Network Load Balancer URL}}    
+

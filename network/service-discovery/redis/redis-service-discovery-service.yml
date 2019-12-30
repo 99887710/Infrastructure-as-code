@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion:  2010-09-09
+
+Description: service discovery service for redis
+
+Parameters:
+  Name:
+    Type: String
+
+Resources:
+  RedisDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties: 
+      Description: Discovery Service for the redis
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: !Ref Name
+      NamespaceId: !ImportValue voodoo-private-dns-namespace
+
+Outputs:
+  RedisDiscoveryServiceId:
+    Description: A reference to the created service discovery service Id
+    Value: !Ref RedisDiscoveryService
+    Export: 
+      Name: redis-service-discovery-service-Id   
+  RedisDiscoveryServiceArn:
+    Description: A reference to the created service discovery service Arn
+    Value: !GetAtt RedisDiscoveryService.Arn
+    Export: 
+      Name: redis-service-discovery-service-arn   

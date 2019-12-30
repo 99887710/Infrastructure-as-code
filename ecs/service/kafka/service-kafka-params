@@ -1,0 +1,4 @@
+ServiceName=kafka
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-kafka
+AssignPublicIp=DISABLED

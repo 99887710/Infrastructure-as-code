@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Security Groups
+
+Resources:
+  RedisSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Redis
+      GroupName: Security Group - Redis
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          CidrIp: 0.0.0.0/0
+          Description: Port 6379 used by Redis
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  KafkaSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Kafka
+      GroupName: Security Group - Kafka
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 9092
+          ToPort: 9092
+          CidrIp: 0.0.0.0/0
+          Description: Port 9092 used by Kafka
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  AlbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - ALB
+      GroupName: Security Group - ALB
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+          Description: Port 8080 used by ALB 
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  ApiSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Api
+      GroupName: Security Group - Api
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+          Description: Port 8080 used by API service 
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  EcsHostSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - ECS Host
+      GroupName: Security Group - ECS Host
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: Port 22 used by ECS Hosts for ssh 
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+          Description: Port 8080 used by ECS Hosts for api           
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  NettyPosSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Netty Pos
+      GroupName: Security Group - Netty Pos
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 18101
+          ToPort: 18101
+          CidrIp: 0.0.0.0/0
+          Description: Port 18101 used by Netty Pos
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  NettyPatSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Netty Pat
+      GroupName: Security Group - Netty Pat
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 18102
+          ToPort: 18102
+          CidrIp: 0.0.0.0/0
+          Description: Port 18102 used by Netty Pat
+      VpcId: !ImportValue voodoo-vpc-vpcId 
+  NlbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - NLB
+      GroupName: Security Group - NLB
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 18101
+          ToPort: 18101
+          CidrIp: 0.0.0.0/0
+          Description: Port 18101 used by NLB 
+        - IpProtocol: tcp
+          FromPort: 18102
+          ToPort: 18102
+          CidrIp: 0.0.0.0/0
+          Description: Port 18102 used by NLB 
+      VpcId: !ImportValue voodoo-vpc-vpcId
+  SimulatorSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security Group - Simulator
+      GroupName: Security Group - Simulator
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 9090
+          ToPort: 9090
+          CidrIp: 0.0.0.0/0
+          Description: Port 9090 used by Simulator 
+      VpcId: !ImportValue voodoo-vpc-vpcId
+
+Outputs:
+  RedisSGId:
+    Description: resource ID of Redis SG
+    Value: !Ref RedisSG
+    Export:
+      Name: redis-sg-id
+  KafkaSGId:
+    Description: resource ID of Kafka SG
+    Value: !Ref KafkaSG
+    Export:
+      Name: kafka-sg-id
+  AlbSGId:
+    Description: resource ID of ALB SG
+    Value: !Ref AlbSG
+    Export:
+      Name: alb-sg-id
+  ApiSGId:
+    Description: resource ID of API SG
+    Value: !Ref ApiSG
+    Export:
+      Name: api-sg-id
+  EcsHostSGId:
+    Description: resource ID of ECS HOST SG
+    Value: !Ref EcsHostSG
+    Export:
+      Name: ecs-host-sg-id
+  NettyPosSGId:
+    Description: resource ID of Netty Pos SG
+    Value: !Ref NettyPosSG
+    Export:
+      Name: netty-pos-sg-id
+  NettyPatSGId:
+    Description: resource ID of Netty Pat SG
+    Value: !Ref NettyPatSG
+    Export:
+      Name: netty-pat-sg-id
+  NlbSGId:
+    Description: resource ID of NLB SG
+    Value: !Ref NlbSG
+    Export:
+      Name: nlb-sg-id
+  SimulatorSGId:
+    Description: resource ID of Simulator SG
+    Value: !Ref SimulatorSG
+    Export:
+      Name: simulator-sg-id
+
+      

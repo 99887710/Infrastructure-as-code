@@ -1,0 +1,4 @@
+ServiceName=decoder
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-decoder
+AssignPublicIp=DISABLED

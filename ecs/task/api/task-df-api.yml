@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: An ECS task definition cf template for API component
+
+Parameters:
+  Image:
+    Type: String  
+  ServiceName:
+    Type: String
+  NetworkMode:
+    Type: String 
+  RequiresCompatibilities:
+    Type: String
+    #The launch type: EC2, FARGATE
+  Cpu:
+    Type: String
+  Memory:
+    Type: String  
+  ContainerPort:
+    Type: Number
+  HostPort:
+    Type: Number
+  Kafka:
+    Type: String
+  Rds:
+    Type: String  
+  ActiveProfile:
+    Type: String
+
+Resources:
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    DependsOn: 'LogGroup'
+    Properties:
+      Family: !Join ['-', [!Ref ServiceName, TaskDefinition]]
+      NetworkMode: !Ref NetworkMode
+      RequiresCompatibilities:
+        - !Ref RequiresCompatibilities
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory   
+      ExecutionRoleArn: !ImportValue voodoo-execution-role-arn
+      TaskRoleArn: !ImportValue voodoo-task-role-arn
+      ContainerDefinitions:
+        - Name: !Ref ServiceName
+          Image: !Ref Image
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort 
+              HostPort: !Ref HostPort
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs    
+          Environment:   
+             - Name: spring.kafka.bootstrap-servers
+               Value: !Ref Kafka
+             - Name: spring.profiles.active
+               Value: !Ref ActiveProfile
+             - Name: spring.redis.host
+               Value: !Ref Redis         
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [/ecs/, !Ref ServiceName, TaskDefinition]]   
+
+Outputs:
+  TaskDefinition:
+    Description: A reference to the created task definiton
+    Value: !Ref TaskDefinition
+    Export:
+      Name: task-definition-api

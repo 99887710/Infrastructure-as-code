@@ -1,0 +1,5 @@
+ServiceName=netty-pat
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-netty-pat
+AssignPublicIp=DISABLED
+ContainerPort=18102

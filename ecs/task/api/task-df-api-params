@@ -1,0 +1,11 @@
+Image={{Your AWS Account Number}}.dkr.ecr.eu-west-2.amazonaws.com/voodoo-api:demo-01
+ServiceName=api
+NetworkMode=bridge
+RequiresCompatibilities=EC2
+Cpu=1024
+Memory=2GB
+ContainerPort=5000
+HostPort=8080
+Kafka={{service DNS name}}:9092
+Redis={{service DNS name}} 
+ActiveProfile=dev

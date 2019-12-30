@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String
+
+Resources:
+  Decoder:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: arn:aws:ecs:eu-west-2:{{Your AWS Account Number}}:task-definition/decoder-TaskDefinition:3
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          Subnets: 
+            - !ImportValue voodoo-vpc-privateSubnet1Id
+Outputs:
+  DecoderEcsServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref Decoder
+    Export: 
+      Name: decoder-ecs-service-arn 

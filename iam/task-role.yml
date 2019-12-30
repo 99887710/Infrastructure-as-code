@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A cf template for IAM Task Role
+
+Resources:
+
+  VoodooTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'voodoo-task-role-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'  
+
+Outputs:
+  VoodooTaskRole:
+    Description: A reference to the created task role
+    Value: !GetAtt VoodooTaskRole.Arn
+    Export:
+      Name: voodoo-task-role-arn

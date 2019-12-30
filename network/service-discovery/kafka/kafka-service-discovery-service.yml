@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion:  2010-09-09
+
+Description: service discovery service for kafka
+
+Parameters:
+  Name:
+    Type: String
+
+Resources:
+  KafkaDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties: 
+      Description: Discovery Service for the kafka
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: !Ref Name
+      NamespaceId: !ImportValue voodoo-private-dns-namespace
+
+Outputs:
+  KafkaDiscoveryServiceId:
+    Description: A reference to the created service discovery service Id
+    Value: !Ref KafkaDiscoveryService
+    Export: 
+      Name: kafka-service-discovery-service-Id   
+  KafkaDiscoveryServiceArn:
+    Description: A reference to the created service discovery service Arn
+    Value: !GetAtt KafkaDiscoveryService.Arn
+    Export: 
+      Name: kafka-service-discovery-service-arn   

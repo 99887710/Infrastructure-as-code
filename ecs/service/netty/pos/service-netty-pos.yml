@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String
+  ContainerPort:
+    Type: Number
+    
+Resources:
+  NettyPos:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !ImportValue task-definition-netty-pos
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: !Ref ServiceName
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !ImportValue netty-pos-service-target-group     
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          SecurityGroups: 
+            - !ImportValue netty-pos-sg-id
+          Subnets: 
+            - !ImportValue voodoo-vpc-privateSubnet1Id
+
+Outputs:
+  NettyPosServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref NettyPos
+    Export: 
+      Name: netty-pos-service-arn   

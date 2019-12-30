@@ -1,0 +1,6 @@
+ProjectName={{Project Name}} 
+ClusterName={{Cluster Name}}
+ECSAMI=/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+InstanceType=m5.large
+MaxSize=2
+DesiredCapacity=2

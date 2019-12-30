@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String
+
+Resources:
+  Kafka:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !ImportValue task-definition-kafka
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          SecurityGroups: 
+            - !ImportValue kafka-sg-id
+          Subnets: 
+            - !ImportValue voodoo-vpc-privateSubnet1Id
+      ServiceRegistries:
+        - RegistryArn: !ImportValue kafka-service-discovery-service-arn
+
+Outputs:
+  KafkaEcsServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref Kafka
+    Export: 
+      Name: kafka-ecs-service-arn 

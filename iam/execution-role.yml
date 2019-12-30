@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: A cf template for IAM Execution Role
+
+Resources:
+
+  VoodooExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'voodoo-execution-role-${AWS::Region}' 
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'   
+
+Outputs:
+  VoodooExecutionRole:
+    Description: A reference to the created execution role
+    Value: !GetAtt VoodooExecutionRole.Arn
+    Export:
+      Name: voodoo-execution-role-arn

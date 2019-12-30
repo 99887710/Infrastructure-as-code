@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String  
+  ContainerPort:
+    Type: Number
+
+Resources:
+  Api:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: arn:aws:ecs:eu-west-2:{{Your AWS Account Number}}:task-definition/api-TaskDefinition:5
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: EC2
+      LoadBalancers:
+        - ContainerName: !Ref ServiceName
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !ImportValue api-service-target-group     
+      # NetworkConfiguration: only for awsvpc, i.e FARGATE
+      #   AwsvpcConfiguration:
+      #     AssignPublicIp: !Ref AssignPublicIp
+      #     SecurityGroups: 
+      #       - !ImportValue api-sg-id          
+      #     Subnets: 
+      #       - !ImportValue voodoo-vpc-privateSubnet1Id
+
+  # AutoScalingRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Statement:
+  #       - Effect: Allow
+  #         Principal:
+  #           Service: [application-autoscaling.amazonaws.com]
+  #         Action: ["sts:AssumeRole"]
+  #     Path: /
+  #     Policies:
+  #     - PolicyName: service-autoscaling
+  #       PolicyDocument:
+  #         Statement:
+  #         - Effect: Allow
+  #           Action: ["application-autoscaling:*", "cloudwatch:DescribeAlarms", "cloudwatch:PutMetricAlarm",
+  #             "ecs:DescribeServices", "ecs:UpdateService"]
+  #           Resource: "*"
+
+  # AutoScalingTarget:
+  #   Type: AWS::ApplicationAutoScaling::ScalableTarget
+  #   Properties:
+  #     MaxCapacity: 2
+  #     MinCapacity: 1
+  #     ResourceId: !Join ["/", [service, !Ref Cluster, !GetAtt [Api, Name]]]
+  #     RoleARN: !GetAtt [ AutoScalingRole, Arn ]
+  #     ScalableDimension: ecs:service:DesiredCount
+  #     ServiceNamespace: ecs       
+
+  # ScaleUp:
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   Properties:
+  #     PolicyName: ApiScalingUpPolicy
+  #     PolicyType: StepScaling
+  #     ScalingTargetId: !Ref AutoScalingTarget
+  #     StepScalingPolicyConfiguration:
+  #       Cooldown: 60
+  #       MetricAggregationType: "Average"
+  #       AdjustmentType: "ChangeInCapacity"
+  #       StepAdjustments:
+  #         - MetricIntervalUpperBound: 20
+  #           ScalingAdjustment: 1
+
+  # ScaleDown:
+  #   Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  #   Properties:
+  #     PolicyName: ApiScalingDownPolicy
+  #     PolicyType: StepScaling
+  #     ScalingTargetId: !Ref AutoScalingTarget
+  #     StepScalingPolicyConfiguration:
+  #       Cooldown: 60
+  #       MetricAggregationType: "Average"
+  #       AdjustmentType: "ChangeInCapacity"
+  #       StepAdjustments:
+  #         - MetricIntervalLowerBound: -30
+  #           ScalingAdjustment: -1
+
+  # ApiServiceAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     AlarmName: ApiServiceAlarm
+  #     AlarmDescription: "Trigger scaling based on ECS API Service"
+  #     Namespace: "AWS/ECS"
+  #     MetricName: CPUUtilization
+  #     ComparisonOperator: GreaterThanThreshold
+  #     Dimensions:
+  #       - Name: QueueName
+  #         Value: !Ref "sqsQueue"
+  #     EvaluationPeriods: 2
+  #     Period: 300
+  #     Statistic: 'Average'
+  #     Threshold: 70
+  #     AlarmActions:
+  #       - !Ref ScaleUp
+  #       - !Ref ScaleDown
+  #     OKActions:
+  #       - !Ref ScaleUp
+  #       - !Ref ScaleDown
+
+Outputs:
+  ApiEcsServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref Api
+    Export: 
+      Name: api-ecs-service-arn 

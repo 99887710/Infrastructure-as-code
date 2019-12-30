@@ -1,0 +1,9 @@
+Image={{Your AWS Account Number}}.dkr.ecr.eu-west-2.amazonaws.com/voodoo-netty-release:latest
+ServiceName=netty-pos
+NetworkMode=awsvpc
+RequiresCompatibilities=FARGATE
+Cpu=1024
+Memory=2GB
+ContainerPort=18101
+Kafka={{service DNS name}}:9092
+ActiveProfile=pos   

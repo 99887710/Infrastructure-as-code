@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion:  2010-09-09
+
+Description: private DNS namespace for voodoo vpc
+
+Resources:
+  VoodooPrivateDnsNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+        Name: voodoo
+        Vpc: !ImportValue voodoo-vpc-vpcId
+
+Outputs:
+  VoodooPrivateDnsNamespace:
+    Description: A reference to the created Private Dns Namespace
+    Value: !Ref VoodooPrivateDnsNamespace
+    Export: 
+      Name: voodoo-private-dns-namespace

@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Application Load Balancer - API Service
+
+Resources:
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      IpAddressType: ipv4
+      Name: ALB
+      Scheme: internet-facing
+      SecurityGroups: 
+        - !ImportValue alb-sg-id
+      Subnets:
+        - !ImportValue voodoo-vpc-publicSubnet1Id
+        - !ImportValue voodoo-vpc-publicSubnet2Id
+      Type: application
+  
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: ALB
+    Properties: 
+      DefaultActions: 
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref ALB
+      Port: 8080
+      Protocol: HTTP
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      HealthCheckEnabled: true
+      HealthCheckPath: /docs/api-guide.html
+      # HealthCheckProtocol: String
+      Name: api-service-target-group
+      Port: 8080
+      Protocol: HTTP          
+      VpcId: !ImportValue voodoo-vpc-vpcId
+
+Outputs:
+  ALB:
+    Description: Application Load Balancer - API Service
+    Value: !Ref ALB
+    Export:
+      Name: alb-arn
+  Listener:
+    Description: The ARN of the public load balancer's Listener
+    Value: !Ref Listener
+    Export:
+      Name: alb-listener-arn
+  ExternalUrl:
+    Description: The url of the external load balancer
+    Value: !Sub http://${ALB.DNSName}
+    Export:
+      Name: alb-external-url
+  TargetGroup:
+    Description: The arn of target group
+    Value: !Ref TargetGroup
+    Export:
+      Name: api-service-target-group    

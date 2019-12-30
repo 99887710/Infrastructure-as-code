@@ -1,0 +1,4 @@
+ServiceName=simulator
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-simulator
+AssignPublicIp=ENABLED

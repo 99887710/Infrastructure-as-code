@@ -1,0 +1,5 @@
+ServiceName=api
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-api
+AssignPublicIp=DISABLED
+ContainerPort=5000

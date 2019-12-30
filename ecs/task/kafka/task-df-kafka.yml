@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: An ECS task definition cf template for Kafka component
+
+Parameters:
+  Image:
+    Type: String  
+  ServiceName:
+    Type: String
+  NetworkMode:
+    Type: String 
+  RequiresCompatibilities:
+    Type: String
+    #The launch type: EC2, FARGATE
+  Cpu:
+    Type: String
+  Memory:
+    Type: String  
+  ContainerPortKafka:
+    Type: Number
+    #Port for kafka
+  ContainerPortZk:
+    Type: Number
+    #Port for zoo keeper
+  ContainerPortOtherUse1:
+    Type: Number
+  ContainerPortOtherUse2:
+    Type: Number
+  ContainerPortOtherUse3:
+    Type: Number
+  AdvHost:
+    Type: String
+
+Resources:
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition  
+    DependsOn: 'LogGroup'
+    Properties:
+      Family: !Join ['-', [!Ref ServiceName, TaskDefinition]]
+      NetworkMode: !Ref NetworkMode
+      RequiresCompatibilities:
+        - !Ref RequiresCompatibilities
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory   
+      ExecutionRoleArn: !ImportValue voodoo-execution-role-arn
+      TaskRoleArn: !ImportValue voodoo-task-role-arn
+      ContainerDefinitions:
+        - Name: !Ref ServiceName
+          Image: !Ref Image
+          PortMappings:
+            - ContainerPort: !Ref ContainerPortKafka 
+            - ContainerPort: !Ref ContainerPortZk 
+            - ContainerPort: !Ref ContainerPortOtherUse1 
+            - ContainerPort: !Ref ContainerPortOtherUse2 
+            - ContainerPort: !Ref ContainerPortOtherUse3             
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: ecs    
+          Environment:   
+             - Name: ADV_HOST
+               Value: !Ref AdvHost  
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [/ecs/, !Ref ServiceName, TaskDefinition]]   
+
+Outputs:
+  TaskDefinition:
+    Description: A reference to the created task definiton
+    Value: !Ref TaskDefinition
+    Export:
+      Name: task-definition-kafka

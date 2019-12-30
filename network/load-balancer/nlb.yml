@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Network Load Balancer - Netty Pos/Pat Service
+
+Resources:
+
+  ElbEip:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: vpc
+
+  NLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn: ElbEip      
+    Properties: 
+      IpAddressType: ipv4
+      Name: NLB
+      Scheme: internet-facing
+      SubnetMappings:
+        - AllocationId: !GetAtt ElbEip.AllocationId
+          SubnetId: !ImportValue voodoo-vpc-publicSubnet1Id  
+      Type: network
+
+  ListenerPos:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: NLB
+    Properties: 
+      DefaultActions: 
+        - TargetGroupArn: !Ref TargetGroupPos
+          Type: forward
+      LoadBalancerArn: !Ref NLB
+      Port: 18101
+      Protocol: TCP
+
+  ListenerPat:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    DependsOn: NLB
+    Properties: 
+      DefaultActions: 
+        - TargetGroupArn: !Ref TargetGroupPat
+          Type: forward
+      LoadBalancerArn: !Ref NLB
+      Port: 18102
+      Protocol: TCP
+
+  TargetGroupPos:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      # HealthCheckProtocol: String
+      Name: netty-pos-service-target-group
+      Port: 18101
+      Protocol: TCP          
+      VpcId: !ImportValue voodoo-vpc-vpcId
+      TargetType: ip
+
+  TargetGroupPat:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      # HealthCheckProtocol: String
+      Name: netty-pat-service-target-group
+      Port: 18102
+      Protocol: TCP          
+      VpcId: !ImportValue voodoo-vpc-vpcId
+      TargetType: ip
+
+Outputs:
+  NLB:
+    Description: Network Load Balancer - Netty Pos/Pat Service
+    Value: !Ref NLB
+    Export:
+      Name: nlb-arn
+  ListenerPos:
+    Description: The ARN of the public load balancer's Listener for Netty Pos
+    Value: !Ref ListenerPos
+    Export:
+      Name: nlb-listener-pos-arn
+  ListenerPat:
+    Description: The ARN of the public load balancer's Listener for Netty Pat
+    Value: !Ref ListenerPat
+    Export:
+      Name: nlb-listener-pat-arn
+  ExternalUrl:
+    Description: The url of the external load balancer
+    Value: !Sub http://${NLB.DNSName}
+    Export:
+      Name: nlb-external-url
+  TargetGroupPos:
+    Description: The arn of target group for Netty Pos
+    Value: !Ref TargetGroupPos
+    Export:
+      Name: netty-pos-service-target-group   
+  TargetGroupPat:
+    Description: The arn of target group for Netty Pat
+    Value: !Ref TargetGroupPat
+    Export:
+      Name: netty-pat-service-target-group   
+  NlbEip:
+    Description: The elastic ip of network load balancer
+    Value: !GetAtt ElbEip.AllocationId
+    Export:
+      Name: nlb-eip       

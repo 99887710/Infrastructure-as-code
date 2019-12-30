@@ -1,0 +1,9 @@
+Image={{Your AWS Account Number}}.dkr.ecr.eu-west-2.amazonaws.com/voodoo-netty-release:latest
+ServiceName=netty-pat
+NetworkMode=awsvpc
+RequiresCompatibilities=FARGATE
+Cpu=1024
+Memory=2GB
+ContainerPort=18102
+Kafka=kafka.voodoo:9092
+ActiveProfile=pat   

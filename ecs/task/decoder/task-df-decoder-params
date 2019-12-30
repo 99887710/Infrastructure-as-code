@@ -1,0 +1,8 @@
+Image={{Your AWS Account Number}}.dkr.ecr.eu-west-2.amazonaws.com/voodoo-decoder-release:latest
+ServiceName=decoder
+NetworkMode=awsvpc
+RequiresCompatibilities=FARGATE
+Cpu=1024
+Memory=2GB
+Kafka={{service DNS name}}:9092
+Redis={{service DNS name}}

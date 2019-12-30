@@ -1,0 +1,4 @@
+ServiceName=redis
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-redis
+AssignPublicIp=DISABLED

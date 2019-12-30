@@ -1,0 +1,5 @@
+ServiceName=netty-pos
+Cluster={{Cluster Name}}
+TaskDefinition=task-definition-netty-pos
+AssignPublicIp=DISABLED
+ContainerPort=18101

@@ -1,0 +1,12 @@
+Image=landoop/fast-data-dev
+ServiceName=kafka
+NetworkMode=awsvpc
+RequiresCompatibilities=FARGATE
+Cpu=1024
+Memory=2GB
+ContainerPortKafka=9092
+ContainerPortZk=2181
+ContainerPortOtherUse1=3030
+ContainerPortOtherUse2=9093
+ContainerPortOtherUse3=8081
+AdvHost=kafka.voodoo

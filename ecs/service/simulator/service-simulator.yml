@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: API ECS service
+
+Parameters:
+  ServiceName:
+    Type: String
+  Cluster:
+    Type: String  
+  TaskDefinition:
+    Type: String  
+  AssignPublicIp:
+    Type: String
+
+Resources:
+  Simulator:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Ref ServiceName
+      Cluster: !Ref Cluster
+      TaskDefinition: !ImportValue task-definition-simulator
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1        
+      # HealthCheckGracePeriodSeconds: 30
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          SecurityGroups: 
+            - !ImportValue simulator-sg-id
+          Subnets: 
+            - !ImportValue voodoo-vpc-publicSubnet1Id
+
+Outputs:
+  SimulatorEcsServiceArn:
+    Description: A reference to the created ecs service Arn
+    Value: !Ref Simulator
+    Export: 
+      Name: simulator-ecs-service-arn 
