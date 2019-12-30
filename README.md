@@ -66,7 +66,7 @@ syntax:
 ``` 
  
 e.g. 
-    ./ecr-image-bulk-migrate.sh  ***eu-west-1*** ***eu-west-2*** ***Account Id*** ***AWS Profile***  
+    ./ecr-image-bulk-migrate.sh  ***[eu-west-1]*** ***[eu-west-2]*** ***[Account Id]*** ***[AWS Profile]***  
  
 >[ECR image cross-region single migration] 
 ```sh 
@@ -75,7 +75,7 @@ syntax:
 ``` 
  
 e.g. 
-    ./ecr-image-migrate.sh ***eu-west-1*** ***eu-west-2*** ***Account Id*** ***Src ECR Repo*** ***Src ECR Tag*** ***Dst ECR Tag*** ***AWS Profile*** 
+    ./ecr-image-migrate.sh ***[eu-west-1]*** ***[eu-west-2]*** ***[Account Id]*** ***[Src ECR Repo]*** ***[Src ECR Tag]*** ***[Dst ECR Tag]*** ***[AWS Profile]*** 
  
  
 >[Deploy aws resources] 
