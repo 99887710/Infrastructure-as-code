@@ -13,7 +13,7 @@ Advantages:
 
 ## Tech Roadmap
  
-Voodoo Infra uses a number of AWS services to work properly: 
+Voodoo Infra uses a number of AWS services to work together, see below: 
  
 * [ECS] - is a highly scalable, high performance container orchestration service that supports Docker containers ! 
 * [ECR] - is a fully-managed Docker container registry 
