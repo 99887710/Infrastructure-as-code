@@ -1,5 +1,5 @@
 # [DevOps] Infrastructure-as-code
-Using AWS Cloudformation to demo Infrastructure-as-code (IaC) concept
+Using *AWS Cloudformation* to demo Infrastructure-as-code (IaC) concept
 
 Infrastructure-as-code (IaC) is a concept focusing on how to deliver environments in a consistent, efficient way.
 
